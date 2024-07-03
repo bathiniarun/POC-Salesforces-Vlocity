@@ -1,0 +1,73 @@
+name: Salesforce CICD Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Select the environment'
+        required: true
+        type: choice
+        options:
+          - QA
+          - INT
+          - UAT
+          - Prod
+
+jobs:
+  VlocityDeployment:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+
+      - name: Install Salesforce CLI
+        run: npm install -g sfdx-cli --global
+    
+      - name: Install Vlocity Build Tool
+        run: npm install -g vlocity
+
+      - name: Authorize Salesforce Org
+        run: |
+          if [ "${{ github.event.inputs.environment }}" == "QA" ]; then
+            sfdx force:auth:jwt:grant --clientid YOUR_CLIENT_ID --jwtkeyfile mycerts/server.key --username qa-username@example.com --instanceurl https://your-instance-url
+          elif [ "${{ github.event.inputs.environment }}" == "INT" ]; then
+            sfdx force:auth:jwt:grant --clientid YOUR_CLIENT_ID --jwtkeyfile mycerts/server.key --username int-username@example.com --instanceurl https://your-instance-url
+          elif [ "${{ github.event.inputs.environment }}" == "UAT" ]; then
+            sfdx force:auth:jwt:grant --clientid YOUR_CLIENT_ID --jwtkeyfile mycerts/server.key --username uat-username@example.com --instanceurl https://your-instance-url
+          elif [ "${{ github.event.inputs.environment }}" == "Prod" ]; then
+            sfdx force:auth:jwt:grant --clientid YOUR_CLIENT_ID --jwtkeyfile mycerts/server.key --username prod-username@example.com --instanceurl https://your-instance-url
+          fi
+    
+      - name: Verify Salesforce Connection
+        run: |
+          if [ "${{ github.event.inputs.environment }}" == "QA" ]; then
+            sfdx force:org:display -u qa-username@example.com
+          elif [ "${{ github.event.inputs.environment }}" == "INT" ]; then
+            sfdx force:org:display -u int-username@example.com
+          elif [ "${{ github.event.inputs.environment }}" == "UAT" ]; then
+            sfdx force:org:display -u uat-username@example.com
+          elif [ "${{ github.event.inputs.environment }}" == "Prod" ]; then
+            sfdx force:org:display -u prod-username@example.com
+          fi
+
+      - name: Deploy Vlocity Components using Manifest
+        run: |
+          if [ "${{ github.event.inputs.environment }}" == "QA" ]; then
+            vlocity packDeploy -job flexpage.project.yaml -sfdx.username qa-username@example.com
+          elif [ "${{ github.event.inputs.environment }}" == "INT" ]; then
+            vlocity packDeploy -job flexpage.project.yaml -sfdx.username int-username@example.com
+          elif [ "${{ github.event.inputs.environment }}" == "UAT" ]; then
+            vlocity packDeploy -job flexpage.project.yaml -sfdx.username uat-username@example.com
+          elif [ "${{ github.event.inputs.environment }}" == "Prod" ]; then
+            vlocity packDeploy -job flexpage.project.yaml -sfdx.username prod-username@example.com
+          fi
