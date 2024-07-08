@@ -37,9 +37,9 @@ jobs:
       - name: Authorize Salesforce Org
         run: |
           if [ "${{ github.event.inputs.environment }}" == "Dev" ]; then
-            sfdx force:auth:jwt:grant --clientid YOUR_CLIENT_ID --jwtkeyfile mycerts/server.key --username dev-username@example.com --instanceurl https://your-instance-url
+            sfdx force:auth:jwt:grant --clientid 3MVG9NYvTkhtdEI5.8XvlvG4aHz1XRZm5OagUtRszv05iT2E6z0bOPJXhFjuEOBJmHhfsJa6bLy2y4v0rzUva --jwtkeyfile SSL/server.key --username bxkumar1@sentara.com.sentarahealth.cicd1 --instanceurl https://sentarahealth--cicd1.sandbox.my.salesforce.com
           elif [ "${{ github.event.inputs.environment }}" == "QA" ]; then
-            sfdx force:auth:jwt:grant --clientid YOUR_CLIENT_ID --jwtkeyfile mycerts/server.key --username qa-username@example.com --instanceurl https://your-instance-url
+            sfdx force:auth:jwt:grant --clientid 3MVG9NYvTkhtdEI5Z9dZmBB.toZ_f9ZTkCtyPmQsts6QEJINuMe.ywRNgQcUztn1n6Aw8r8OZ0uJHhAIos7nX --jwtkeyfile SSL/server.key --username bxkumar1@sentara.com.cicd2 --instanceurl https://sentarahealth--cicd2.sandbox.my.salesforce.com
           fi
     
       - name: Verify Salesforce Connection
@@ -50,10 +50,10 @@ jobs:
             sfdx force:org:display -u qa-username@example.com
           fi
 
-      - name: Deploy Vlocity Components using Manifest
-        run: |
-          if [ "${{ github.event.inputs.environment }}" == "Dev" ]; then
-            vlocity packDeploy -job flexpage.project.yaml -sfdx.username dev-username@example.com
-          elif [ "${{ github.event.inputs.environment }}" == "QA" ]; then
-            vlocity packDeploy -job flexpage.project.yaml -sfdx.username qa-username@example.com
-          fi
+     # - name: Deploy Vlocity Components using Manifest
+      #  run: |
+       #   if [ "${{ github.event.inputs.environment }}" == "Dev" ]; then
+       #     vlocity packDeploy -job flexpage.project.yaml -sfdx.username dev-username@example.com
+       #   elif [ "${{ github.event.inputs.environment }}" == "QA" ]; then
+        #    vlocity packDeploy -job flexpage.project.yaml -sfdx.username qa-username@example.com
+        #  fi
