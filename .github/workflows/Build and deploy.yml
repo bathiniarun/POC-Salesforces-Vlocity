@@ -50,10 +50,10 @@ jobs:
             sfdx force:org:display -u bxkumar1@sentara.com.cicd2
           fi
 
-     # - name: Deploy Vlocity Components using Manifest
-      #  run: |
-       #   if [ "${{ github.event.inputs.environment }}" == "Dev" ]; then
-       #     vlocity packDeploy -job flexpage.project.yaml -sfdx.username dev-username@example.com
-       #   elif [ "${{ github.event.inputs.environment }}" == "QA" ]; then
-        #    vlocity packDeploy -job flexpage.project.yaml -sfdx.username qa-username@example.com
-        #  fi
+      - name: Deploy Vlocity Components using Manifest
+        run: |
+          if [ "${{ github.event.inputs.environment }}" == "Dev" ]; then
+            vlocity packDeploy -job flexpage.project.yaml -sfdx.username bxkumar1@sentara.com.sentarahealth.cicd1
+          elif [ "${{ github.event.inputs.environment }}" == "QA" ]; then
+            vlocity packDeploy -job flexpage.project.yaml -sfdx.username bxkumar1@sentara.com.cicd2
+          fi
