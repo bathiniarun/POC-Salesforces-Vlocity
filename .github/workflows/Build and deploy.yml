@@ -45,9 +45,9 @@ jobs:
       - name: Verify Salesforce Connection
         run: |
           if [ "${{ github.event.inputs.environment }}" == "Dev" ]; then
-            sfdx force:org:display -u dev-username@example.com
+            sfdx force:org:display -u bxkumar1@sentara.com.sentarahealth.cicd1
           elif [ "${{ github.event.inputs.environment }}" == "QA" ]; then
-            sfdx force:org:display -u qa-username@example.com
+            sfdx force:org:display -u bxkumar1@sentara.com.cicd2
           fi
 
      # - name: Deploy Vlocity Components using Manifest
