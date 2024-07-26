@@ -38,6 +38,9 @@ jobs:
       - name: Install Vlocity Build Tool
         run: npm install -g vlocity
 
+      - name: Install Puppeteer
+        run: npm install puppeteer
+
       - name: Authorize Salesforce Org
         run: |
           if [ "${{ github.event.inputs.environment }}" == "Dev" ]; then
