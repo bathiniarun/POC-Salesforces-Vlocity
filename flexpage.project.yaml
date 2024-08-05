@@ -1,3 +1,5 @@
 projectPath: ${{ projectPath }}
-ignoreLWCActivationOS: true 
+gitCheck: true
+gitCheckKey: vlocity
+ignoreLWCActivationOS: true
 ignoreLWCActivationCards: true
