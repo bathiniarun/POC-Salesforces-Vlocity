@@ -1,0 +1,74 @@
+name: Salesforce CICD Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Select the environment'
+        required: true
+        type: choice
+        options:
+          - Dev
+          - QA
+      projectPath:
+        description: 'Enter the project path'
+        required: true
+        type: string
+
+jobs:
+  VlocityDeployment:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+
+      - name: Install Salesforce CLI
+        run: npm install -g sfdx-cli --global
+
+      - name: Install Vlocity Build Tool
+        run: npm install -g vlocity
+
+      - name: Install Puppeteer
+        run: npm install puppeteer
+
+      - name: Determine Latest Changed Folder in vlocity
+        id: determine-latest-folder
+        run: |
+          latest_commit=$(git log -1 --pretty=format:"%H" -- vlocity)
+          latest_folder=$(git diff-tree --no-commit-id --name-only -r $latest_commit | grep 'vlocity/' | head -n 1 | xargs dirname)
+          echo "Latest vlocity folder: $latest_folder"
+          echo "::set-output name=latest_folder::$latest_folder"
+
+      - name: Authorize Salesforce Org
+        run: |
+          if [ "${{ github.event.inputs.environment }}" == "Dev" ]; then
+            sfdx force:auth:jwt:grant --clientid 3MVG9NYvTkhtdEI5.8XvlvG4aHz1XRZm5OagUtRszv05iT2E6z0bOPJXhFjuEOBJmHhfsJa6bLy2y4v0rzUva --jwtkeyfile SSL/server.key --username bxkumar1@sentara.com.sentarahealth.cicd1 --instanceurl https://sentarahealth--cicd1.sandbox.my.salesforce.com
+          elif [ "${{ github.event.inputs.environment }}" == "QA" ]; then
+            sfdx force:auth:jwt:grant --clientid 3MVG9NYvTkhtdEI5Z9dZmBB.toZ_f9ZTkCtyPmQsts6QEJINuMe.ywRNgQcUztn1n6Aw8r8OZ0uJHhAIos7nX --jwtkeyfile SSL/server.key --username bxkumar1@sentara.com.cicd2 --instanceurl https://sentarahealth--cicd2.sandbox.my.salesforce.com
+          fi
+
+      - name: Verify Salesforce Connection
+        run: |
+          if [ "${{ github.event.inputs.environment }}" == "Dev" ]; then
+            sfdx force:org:display -u bxkumar1@sentara.com.sentarahealth.cicd1
+          elif [ "${{ github.event.inputs.environment }}" == "QA" ]; then
+            sfdx force:org:display -u bxkumar1@sentara.com.cicd2
+          fi
+
+      - name: Deploy Vlocity Components using Manifest
+        run: |
+          if [ "${{ github.event.inputs.environment }}" == "Dev" ]; then
+            vlocity packDeploy -job flexpage.project.yaml -sfdx.username bxkumar1@sentara.com.sentarahealth.cicd1 -projectPath ${{ steps.determine-latest-folder.outputs.latest_folder }}
+          elif [ "${{ github.event.inputs.environment }}" == "QA" ]; then
+            vlocity packDeploy -job flexpage.project.yaml -sfdx.username bxkumar1@sentara.com.cicd2 -projectPath ${{ steps.determine-latest-folder.outputs.latest_folder }}
+          fi
