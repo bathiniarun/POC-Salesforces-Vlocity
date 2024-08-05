@@ -1,4 +1,4 @@
-name: Salesforce CICD Deploy
+name: commit based deployment
 
 on:
   push:
