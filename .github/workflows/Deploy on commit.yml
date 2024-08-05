@@ -3,7 +3,7 @@ name: Deploy on commit
 on:
   push:
     branches:
-      - Kumar_Test
+      - main
 
 jobs:
   VlocityDeployment:
