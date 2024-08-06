@@ -37,14 +37,55 @@ jobs:
         run: |
           sfdx force:org:display -u bxkumar1@sentara.com.cicd2
 
-      - name: Find Latest Commit
-        id: find-latest-commit
+          - name: Find Latest Commit
+          id: find-latest-commit
+          run: |
+            # Get the hash of the latest commit
+            latest_commit=$(git log -n 1 --format="%H")
+            echo "LATEST_COMMIT=$latest_commit" >> $GITHUB_ENV
+  
+      - name: Get Previous Commit
+        id: get-previous-commit
         run: |
-          # Get the hash of the latest commit
-          latest_commit=$(git log -n 1 --format="%H")
-          echo "LATEST_COMMIT=$latest_commit" >> $GITHUB_ENV
-          
-      - name: Display Latest Commit
+          # Get the hash of the previous commit
+          previous_commit=$(git log --format="%H" -n 2 | tail -n 1)
+          echo "PREVIOUS_COMMIT=$previous_commit" >> $GITHUB_ENV
+  
+      - name: Identify Changed Files
+        id: identify-changes
         run: |
-          echo "Deploying changes from commit: $LATEST_COMMIT"
-        
+          # Get the list of changed files in the vlocity folder
+          git diff --name-only $PREVIOUS_COMMIT $LATEST_COMMIT -- vlocity/ > changed-files.txt
+          cat changed-files.txt
+          echo "CHANGED_FILES=$(cat changed-files.txt)" >> $GITHUB_ENV
+  
+      - name: Update Existing flexpage.project.yaml
+        run: |
+            # Backup the existing flexpage.project.yaml
+            cp flexpage.project.yaml flexpage.project.yaml.bak
+  
+            # Create a temporary file for the updated job file
+            temp_job_file=$(mktemp)
+            
+            # Add version header if needed
+            echo "version: '1.0'" > $temp_job_file
+            echo "jobs:" >> $temp_job_file
+  
+            # Read the existing job file and update with changed files
+            while IFS= read -r line; do
+              if [[ $line == *"path:"* ]]; then
+                path=$(echo $line | awk '{print $2}')
+                if grep -q "$path" changed-files.txt; then
+                  echo "$line" >> $temp_job_file
+                fi
+              else
+                echo "$line" >> $temp_job_file
+              fi
+            done < flexpage.project.yaml
+  
+            # Replace the existing job file with the updated one
+            mv $temp_job_file flexpage.project.yaml
+  
+      - name: Deploy Vlocity Components using Manifest
+        run: |
+          vlocity packDeploy -job flexpage.project.yaml -sfdx.username bxkumar1@sentara.com.cicd2  
