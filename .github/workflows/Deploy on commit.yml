@@ -30,31 +30,31 @@ jobs:
 
       - name: Authorize Salesforce DeployTestOrg Org
         run: |
-         sfdx force:auth:jwt:grant --clientid 3MVG9NYvTkhtdEI5Z9dZmBB.toZ_f9ZTkCtyPmQsts6QEJINuMe.ywRNgQcUztn1n6Aw8r8OZ0uJHhAIos7nX --jwtkeyfile SSL/server.key --username bxkumar1@sentara.com.cicd2 --instanceurl https://sentarahealth--cicd2.sandbox.my.salesforce.com 
+         sfdx force:auth:jwt:grant --clientid 3MVG9NYvTkhtdEI5Z9dZmBB.toZ_f9ZTkCtyPmQsts6QEJINuMe.ywRNgQcUztn1n6Aw8r8OZ0uJHhAIos7nX --jwtkeyfile SSL/server.key --username bxkumar1@sentara.com.cicd2 --instanceurl https://sentarahealth--cicd2.sandbox.my.salesforce.com
     
       - name: Verify Salesforce Connection
         id: verify_connection
         run: |
           sfdx force:org:display -u bxkumar1@sentara.com.cicd2
 
-      - name: Get Latest Commit and Folder in vlocity
+      - name: Get latest vlocity folder
         id: get_latest_commit_folder
         run: |
           latest_commit=$(git log -1 --pretty=format:"%H" -- vlocity)
           changed_files=$(git diff-tree --no-commit-id --name-only -r $latest_commit | grep 'vlocity/')
 
           if [ -n "$changed_files" ]; then
-           latest_folder=$(echo "$changed_files" | head -n 1 | xargs dirname)
+            latest_folder=$(echo "$changed_files" | head -n 1 | xargs dirname)
             echo "Latest vlocity folder: $latest_folder"
             echo "::set-output name=latest_folder::$latest_folder"
           else
             echo "No changes detected in the vlocity directory."
             echo "::set-output name=latest_folder::"
           fi
-
+        shell: bash
 
       - name: Deploy Vlocity Components using Manifest
         run: |
           vlocity -projectPath ${{ steps.get_latest_commit_folder.outputs.latest_folder }} -job VlocityJobFile.yml -sfdx.username bxkumar1@sentara.com.cicd2
         env:
-          projectPath: ${{ steps.get_latest_commit_folder.outputs.latest_folder }}
+          projectPath:
