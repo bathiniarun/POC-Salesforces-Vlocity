@@ -37,17 +37,14 @@ jobs:
         run: |
           sfdx force:org:display -u bxkumar1@sentara.com.cicd2
 
-      - name: Determine Changed Files
-        id: changed-files
+      - name: Find Latest Commit
+        id: find-latest-commit
         run: |
-          echo "CHANGED_FILES=$(git diff --name-only HEAD^ HEAD 'vlocity/')" >> $GITHUB_ENV
-
-      - name: Deploy Vlocity Changes
-        if: ${{ env.CHANGED_FILES != '' }}
+          # Get the hash of the latest commit
+          latest_commit=$(git log -n 1 --format="%H")
+          echo "LATEST_COMMIT=$latest_commit" >> $GITHUB_ENV
+          
+      - name: Display Latest Commit
         run: |
-          CHANGED_FILES=$(echo $CHANGED_FILES | tr ' ' '\n' | grep '^vlocity/')
-          for file in $CHANGED_FILES; do
-            # Adjust the deployment command as needed
-            vlocity packDeploy -propertyfile $file -sfdx.username bxkumar1@sentara.com.cicd2
-          done
-
+          echo "Deploying changes from commit: $LATEST_COMMIT"
+        
