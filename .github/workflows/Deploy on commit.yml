@@ -37,24 +37,17 @@ jobs:
         run: |
           sfdx force:org:display -u bxkumar1@sentara.com.cicd2
 
-      - name: Get latest vlocity folder
-        id: get_latest_commit_folder
+      - name: Determine Changed Files
+        id: changed-files
         run: |
-          latest_commit=$(git log -1 --pretty=format:"%H" -- vlocity)
-          changed_files=$(git diff-tree --no-commit-id --name-only -r $latest_commit | grep 'vlocity/')
+          echo "CHANGED_FILES=$(git diff --name-only HEAD^ HEAD 'vlocity/')" >> $GITHUB_ENV
 
-          if [ -n "$changed_files" ]; then
-            latest_folder=$(echo "$changed_files" | head -n 1 | xargs dirname)
-            echo "Latest vlocity folder: $latest_folder"
-            echo "::set-output name=latest_folder::$latest_folder"
-          else
-            echo "No changes detected in the vlocity directory."
-            echo "::set-output name=latest_folder::"
-          fi
-        shell: bash
-
-      - name: Deploy Vlocity Components using Manifest
+      - name: Deploy Vlocity Changes
+        if: ${{ env.CHANGED_FILES != '' }}
         run: |
-          vlocity -projectPath ${{ steps.get_latest_commit_folder.outputs.latest_folder }} -job VlocityJobFile.yml -sfdx.username bxkumar1@sentara.com.cicd2
-        env:
-          projectPath:
+          CHANGED_FILES=$(echo $CHANGED_FILES | tr ' ' '\n' | grep '^vlocity/')
+          for file in $CHANGED_FILES; do
+            # Adjust the deployment command as needed
+            vlocity packDeploy -propertyfile $file -sfdx.username bxkumar1@sentara.com.cicd2
+          done
+
