@@ -41,10 +41,17 @@ jobs:
         id: get_latest_commit_folder
         run: |
           latest_commit=$(git log -1 --pretty=format:"%H" -- vlocity)
-          latest_folder=$(git diff-tree --no-commit-id --name-only -r $latest_commit | grep 'vlocity/' | head -n 1 | xargs dirname)
-          echo "Latest vlocity folder: $latest_folder"
-          echo "::set-output name=latest_folder::$latest_folder"
-        shell: bash
+          changed_files=$(git diff-tree --no-commit-id --name-only -r $latest_commit | grep 'vlocity/')
+
+          if [ -n "$changed_files" ]; then
+           latest_folder=$(echo "$changed_files" | head -n 1 | xargs dirname)
+            echo "Latest vlocity folder: $latest_folder"
+            echo "::set-output name=latest_folder::$latest_folder"
+          else
+            echo "No changes detected in the vlocity directory."
+            echo "::set-output name=latest_folder::"
+          fi
+
 
       - name: Deploy Vlocity Components using Manifest
         run: |
