@@ -37,9 +37,9 @@ jobs:
         run: |
           sfdx force:org:display -u bxkumar1@sentara.com.cicd2
 
-          - name: Find Latest Commit
-          id: find-latest-commit
-          run: |
+      - name: Find Latest Commit
+        id: find-latest-commit
+        run: |
             # Get the hash of the latest commit
             latest_commit=$(git log -n 1 --format="%H")
             echo "LATEST_COMMIT=$latest_commit" >> $GITHUB_ENV
