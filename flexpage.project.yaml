@@ -1,4 +1,5 @@
-projectPath: vlocity
-gitCheck: true
+projectPath: ./vlocity
+gitCheck=true 
+overrideOrgCommit=<GIT_SHA>
 ignoreLWCActivationOS: true
 ignoreLWCActivationCards: true
