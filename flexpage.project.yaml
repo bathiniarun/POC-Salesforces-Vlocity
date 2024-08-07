@@ -1,4 +1,4 @@
 projectPath: ./vlocity
-gitCheck=true 
+gitCheck: true
 ignoreLWCActivationOS: true
 ignoreLWCActivationCards: true
