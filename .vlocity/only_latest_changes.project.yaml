@@ -1,0 +1,9 @@
+Name: Only latest changes
+ignoreDependencies: false
+VlocityDataPackKeys:
+    - CalculationMatrix/headphones1
+    - VlocityCard/papercollect1234
+VlocityTypesToFetch:
+    - CalculationMatrix
+    - VlocityCard
+SalesforceTypesToFetch:

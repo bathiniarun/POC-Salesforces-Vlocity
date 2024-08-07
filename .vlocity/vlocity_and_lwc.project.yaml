@@ -1,0 +1,12 @@
+Name: Vlocity and LWC
+ignoreDependencies: false
+VlocityDataPackKeys:
+    - VlocityCard/datamanager1
+    - lwc/cfDatamanager1
+    - lwc/cfDatamanager1_1_OptimaHealth
+    - objects/Account/fields/CONTACT1234__c.field
+VlocityTypesToFetch:
+    - VlocityCard
+SalesforceTypesToFetch:
+    - CustomField
+    - LightningComponentBundle

@@ -1,0 +1,7 @@
+Name: testing 1
+ignoreDependencies: false
+VlocityDataPackKeys:
+    - VlocityCard/ArunB
+VlocityTypesToFetch:
+    - VlocityCard
+SalesforceTypesToFetch:
