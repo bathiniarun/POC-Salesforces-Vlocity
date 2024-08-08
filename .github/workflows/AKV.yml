@@ -1,0 +1,69 @@
+name: Salesforce JWT Authentication
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  VlocityDeployment:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Ensure full history is fetched
+
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+
+      - name: Install Azure CLI
+        uses: azure/cli@v1
+        with:
+          version: latest
+
+      - name: Retrieve .key file from Azure Key Vault using Managed Identity
+        id: get-key
+        run: |
+          az login --identity
+          secret=$(az keyvault secret show --name my-key --vault-name my-key-vault --query value -o tsv)
+          echo "::set-output name=secret::$secret"
+
+      - name: Save .key file
+        run: echo "${{ steps.get-key.outputs.secret }}" > server.key
+
+      - name: Install Salesforce CLI
+        run: |
+          npm install -g sfdx-cli --global
+
+      - name: Install Vlocity Build Tool
+        run: npm install -g vlocity
+
+      - name: Install Puppeteer
+        run: npm install puppeteer
+
+      - name: Authenticate with Salesforce
+        run: |
+          jwt_key_file="server.key"
+          client_id="${{ secrets.CLIENT_ID }}"
+          user_name="${{ secrets.USER_NAME }}"
+          login_url="${{ secrets.LOGIN_URL }}"
+        
+          echo "Authenticating with Salesforce..."
+          sfdx force:auth:jwt:grant --clientid $client_id --jwtkeyfile $jwt_key_file --username $user_name --instanceurl $login_url 
+
+      - name: Verify Salesforce Connection
+        id: verify_connection
+        run: |
+          sfdx force:org:display -u bxkumar1@sentara.com.cicd2
+
+      - name: Deploy source code to DeployTestOrg Org
+        run: |
+         sfdx force:source:deploy -p force-app -w 10 -u bxkumar1@sentara.com.cicd2
+
+      - name: Deploy Vlocity Components using Manifest
+        run: |
+          vlocity packDeploy -job flexpage.project.yaml -sfdx.username bxkumar1@sentara.com.cicd2
