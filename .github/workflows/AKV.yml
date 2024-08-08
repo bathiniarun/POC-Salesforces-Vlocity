@@ -20,20 +20,20 @@ jobs:
         with:
           node-version: '18.x'
 
-      - name: Install Azure CLI
-        uses: azure/cli@v1
-        with:
-          version: latest
+      # - name: Install Azure CLI
+      #   uses: azure/cli@v1
+      #   with:
+      #     version: latest
 
-      - name: Retrieve .key file from Azure Key Vault using Managed Identity
-        id: get-key
-        run: |
-          az login --identity
-          secret=$(az keyvault secret show --name my-key --vault-name my-key-vault --query value -o tsv)
-          echo "::set-output name=secret::$secret"
+      # - name: Retrieve .key file from Azure Key Vault using Managed Identity
+      #   id: get-key
+      #   run: |
+      #     az login --identity
+      #     secret=$(az keyvault secret show --name my-key --vault-name my-key-vault --query value -o tsv)
+      #     echo "::set-output name=secret::$secret"
 
-      - name: Save .key file
-        run: echo "${{ steps.get-key.outputs.secret }}" > server.key
+      # - name: Save .key file
+      #   run: echo "${{ steps.get-key.outputs.secret }}" > server.key
 
       - name: Install Salesforce CLI
         run: |
@@ -47,7 +47,7 @@ jobs:
 
       - name: Authenticate with Salesforce
         run: |
-          jwt_key_file="server.key"
+          jwt_key_file="SSL/server.key"
           client_id="${{ secrets.CLIENT_ID }}"
           user_name="${{ secrets.USER_NAME }}"
           login_url="${{ secrets.LOGIN_URL }}"
