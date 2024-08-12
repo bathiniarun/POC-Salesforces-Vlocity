@@ -20,20 +20,25 @@ jobs:
         with:
           node-version: '18.x'
 
-      # - name: Install Azure CLI
-      #   uses: azure/cli@v1
-      #   with:
-      #     version: latest
+      - name: Set up Azure CLI
+        uses: azure/setup-azure@v1
+        with:
+          azure-cli-version: 'latest'
+  
+      - name: Log in to Azure
+        run: |
+          az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
+          az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  
+      - name: Retrieve key file from Azure Key Vault
+        id: retrieve-key
+        run: |
+          az keyvault secret download --vault-name ${{ secrets.KEY_VAULT_NAME }} --name salesforce-dev-qa --query value -o tsv > secret.key
 
-      # - name: Retrieve .key file from Azure Key Vault using Managed Identity
-      #   id: get-key
-      #   run: |
-      #     az login --identity
-      #     secret=$(az keyvault secret show --name my-key --vault-name my-key-vault --query value -o tsv)
-      #     echo "::set-output name=secret::$secret"
-
-      # - name: Save .key file
-      #   run: echo "${{ steps.get-key.outputs.secret }}" > server.key
+      - name: Display the key (optional, for debugging purposes)
+        run: |
+          cat secret.key
+        # Use this step to verify the content of the key file. Remove or comment out this step in production.
 
       - name: Install Salesforce CLI
         run: |
@@ -47,13 +52,13 @@ jobs:
 
       - name: Authenticate with Salesforce
         run: |
-          jwt_key_file="SSL/server.key"
+          jwt_key_file="server.key"
           client_id="${{ secrets.CLIENT_ID }}"
           user_name="${{ secrets.USER_NAME }}"
           login_url="${{ secrets.LOGIN_URL }}"
         
           echo "Authenticating with Salesforce..."
-          sfdx force:auth:jwt:grant --clientid $client_id --jwtkeyfile $jwt_key_file --username $user_name --instanceurl $login_url 
+          sfdx force:auth:jwt:grant --clientid $client_id --jwtkeyfile secret.key --username $user_name --instanceurl $login_url 
 
       - name: Verify Salesforce Connection
         id: verify_connection
@@ -62,7 +67,7 @@ jobs:
 
       - name: Deploy source code to DeployTestOrg Org
         run: |
-         sfdx force:source:deploy -p force-app -w 10 -u bxkumar1@sentara.com.cicd2
+          sfdx force:source:deploy -p force-app -w 10 -u bxkumar1@sentara.com.cicd2
 
       - name: Deploy Vlocity Components using Manifest
         run: |
