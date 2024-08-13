@@ -25,19 +25,17 @@ jobs:
     #   run: |
     #       az keyvault secret download --vault-name ${{ secrets.KEY_VAULT_NAME }} --name cicd1 --file salesforce-dev-qa.key
 
-    - name: Retrieve key file content from Azure Key Vault
-      id: retrieve-key
+    - name: Retrieve JWT Key from Azure Key Vault
       run: |
-         secret_value=$(az keyvault secret show --vault-name ${{ secrets.KEY_VAULT_NAME }} --name salesforce-dev --query value -o tsv)
-         echo "$secret_value" > salesforce-dev-qa.key
-        
+       az keyvault secret download --vault-name ${{ secrets.AZURE_KEYVAULT_NAME }} --name ${{ secrets.AZURE_KEY_NAME }} --file jwt.key
+  
     - name: List files in directory
       run: ls -la
    
     - name: Validate JWT key with OpenSSL
       run: |
-        chmod 600 salesforce-dev-qa.key
-        openssl rsa -in salesforce-dev-qa.key -check
+        chmod 600 sjwt.key
+        openssl rsa -in jwt.key -check
   
     - name: Display the secret value
-      run: cat salesforce-dev-qa.key
+      run: cat jwt.key
