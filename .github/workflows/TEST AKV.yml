@@ -27,11 +27,11 @@ jobs:
 
     - name: Retrieve JWT Key from Azure Key Vault
       run: |
-       az keyvault secret download --vault-name ${{ secrets.AZURE_KEYVAULT_NAME }} --name cicd1 --file jwt.key
+       az keyvault secret download --vault-name ${{ secrets.KEY_VAULT_NAME }} --name cicd1 --file jwt.key
 
     - name: Validate JWT key with OpenSSL
       run: |
-         chmod 600 sjwt.key
+         chmod 600 jwt.key
   
     - name: List files in directory
       run: ls -la
