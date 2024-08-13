@@ -20,13 +20,10 @@ jobs:
         az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
         az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-        - name: Retrieve key file from Azure Key Vault
-        id: retrieve-key
-        run: |
-          az keyvault secret download --vault-name ${{ secrets.KEY_VAULT_NAME }} --name salesforce-dev-qa
-
+    - name: Retrieve key file from Azure Key Vault
+      id: retrieve-key
+      run: |
+          az keyvault secret download --vault-name ${{ secrets.KEY_VAULT_NAME }} --name salesforce-dev-qa --file salesforce-dev-qa.key
+  
     - name: Display the secret value
-      run: echo "The secret value is ${{ steps.get-secret.outputs}}
-
-    - name: Print 
-      run: cat ${{ steps.get-secret.outputs}}
+      run: cat salesforce-dev-qa.key
