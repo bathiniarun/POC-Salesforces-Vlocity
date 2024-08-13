@@ -36,7 +36,10 @@ jobs:
         run: |
           secret_value=$(az keyvault secret show --vault-name ${{ secrets.KEY_VAULT_NAME }} --name salesforce-auth --query value -o tsv)
           echo "$secret_value" > salesforce-dev-qa.key
-            
+      
+      - name: Display the secret value
+        run: cat salesforce-dev-qa.key
+
       - name: Install Salesforce CLI
         run: |
           npm install -g sfdx-cli --global
