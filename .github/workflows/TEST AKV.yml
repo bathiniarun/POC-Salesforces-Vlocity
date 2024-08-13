@@ -36,6 +36,7 @@ jobs:
    
     - name: Validate JWT key with OpenSSL
       run: |
+        chmod 600 salesforce-dev-qa.key
         openssl rsa -in salesforce-dev-qa.key -check
   
     - name: Display the secret value
