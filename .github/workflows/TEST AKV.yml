@@ -1,0 +1,32 @@
+name: Retrieve Azure Key Vault Secret
+
+on: 
+  workflow_dispatch:
+jobs:
+  retrieve-secret:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+
+    - name: Retrieve secret from Azure Key Vault
+      id: get-secret
+      uses: azure/keyvault-secrets@v1
+      with:
+        keyvault: ${{ secrets.KEY_VAULT_NAME }}
+        secret: salesforce-dev-qa
+        # optional version: <Your-Secret-Version>
+
+    - name: Display the secret value
+      run: echo "The secret value is ${{ steps.get-secret.outputs}}
+
+    - name: Print 
+      run: cat ${{ steps.get-secret.outputs}}
