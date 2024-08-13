@@ -9,21 +9,21 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
       
-    - name: Login to Azure
-      uses: azure/login@v1
+    - name: Azure CLI Action
+      uses: Azure/cli@v2.0.0
       with:
-        client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+        inlineScript: |
+           az --version
 
-    - name: Retrieve secret from Azure Key Vault
-      id: get-secret
-      uses: azure/keyvault-secrets@v1
-      with:
-        keyvault: ${{ secrets.KEY_VAULT_NAME }}
-        secret: salesforce-dev-qa
-        # optional version: <Your-Secret-Version>
+    - name: Log in to Azure
+      run: |
+        az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
+        az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+        - name: Retrieve key file from Azure Key Vault
+        id: retrieve-key
+        run: |
+          az keyvault secret download --vault-name ${{ secrets.KEY_VAULT_NAME }} --name salesforce-dev-qa
 
     - name: Display the secret value
       run: echo "The secret value is ${{ steps.get-secret.outputs}}
