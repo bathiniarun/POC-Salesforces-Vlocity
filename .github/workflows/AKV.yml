@@ -34,7 +34,7 @@ jobs:
       - name: Retrieve key file content from Azure Key Vault
         id: retrieve-key
         run: |
-          secret_value=$(az keyvault secret show --vault-name ${{ secrets.KEY_VAULT_NAME }} --name salesforce-auth --query value -o tsv)
+          secret_value=$(az keyvault secret show --vault-name ${{ secrets.KEY_VAULT_NAME }} --name salesforce-dev --query value -o tsv)
           echo "$secret_value" > salesforce-dev-qa.key
       
       - name: Display the secret value
