@@ -23,7 +23,7 @@ jobs:
     # - name: Retrieve key file from Azure Key Vault
     #   id: retrieve-key
     #   run: |
-    #       az keyvault secret download --vault-name ${{ secrets.KEY_VAULT_NAME }} --name salesforce-dev-qa --file salesforce-dev-qa.key
+    #       az keyvault secret download --vault-name ${{ secrets.KEY_VAULT_NAME }} --name cicd1 --file salesforce-dev-qa.key
 
     - name: Retrieve key file content from Azure Key Vault
       id: retrieve-key
