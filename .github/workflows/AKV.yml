@@ -1,4 +1,4 @@
-name: Salesforce JWT Authentication
+name: Salesforce Build and Deploy
 
 on:
   push:
@@ -34,13 +34,8 @@ jobs:
       - name: Retrieve key file from Azure Key Vault
         id: retrieve-key
         run: |
-          az keyvault secret download --vault-name ${{ secrets.KEY_VAULT_NAME }} --name salesforce-dev-qa --query value -o tsv > secret.key
-
-      - name: Display the key (optional, for debugging purposes)
-        run: |
-          cat secret.key
-        # Use this step to verify the content of the key file. Remove or comment out this step in production.
-
+          az keyvault secret download --vault-name ${{ secrets.KEY_VAULT_NAME }} --name salesforce-dev-qa --file salesforce-dev-qa.key
+      
       - name: Install Salesforce CLI
         run: |
           npm install -g sfdx-cli --global
@@ -53,23 +48,23 @@ jobs:
 
       - name: Authenticate with Salesforce
         run: |
-          jwt_key_file="server.key"
+          jwt_key_file="salesforce-dev-qa.key"
           client_id="${{ secrets.CLIENT_ID }}"
           user_name="${{ secrets.USER_NAME }}"
           login_url="${{ secrets.LOGIN_URL }}"
         
           echo "Authenticating with Salesforce..."
-          sfdx force:auth:jwt:grant --clientid $client_id --jwtkeyfile secret.key --username $user_name --instanceurl $login_url 
+          sfdx force:auth:jwt:grant --clientid $client_id --jwtkeyfile $jwt_key_file --username $user_name --instanceurl $login_url 
 
       - name: Verify Salesforce Connection
         id: verify_connection
         run: |
-          sfdx force:org:display -u bxkumar1@sentara.com.cicd2
+          sfdx force:org:display -u ${{ secrets.USER_NAME }}
 
       - name: Deploy source code to DeployTestOrg Org
         run: |
-          sfdx force:source:deploy -p force-app -w 10 -u bxkumar1@sentara.com.cicd2
+          sfdx force:source:deploy -p force-app -w 10 -u ${{ secrets.USER_NAME }}
 
       - name: Deploy Vlocity Components using Manifest
         run: |
-          vlocity packDeploy -job flexpage.project.yaml -sfdx.username bxkumar1@sentara.com.cicd2
+          vlocity packDeploy -job flexpage.project.yaml -sfdx.username ${{ secrets.USER_NAME }}
