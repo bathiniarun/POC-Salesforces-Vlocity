@@ -35,7 +35,11 @@ jobs:
         id: retrieve-key
         run: |
           secret_value=$(az keyvault secret show --vault-name ${{ secrets.KEY_VAULT_NAME }} --name salesforce-dev --query value -o tsv)
-          echo "$secret_value" > salesforce-dev-qa.key
+          echo "$secret_value" > salesforce-dev-qa.
+          
+      - name: Validate JWT key with OpenSSL
+        run: |
+          openssl rsa -in salesforce-dev-qa.key -check
       
       - name: Display the secret value
         run: cat salesforce-dev-qa.key
