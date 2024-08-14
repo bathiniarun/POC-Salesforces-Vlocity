@@ -1,9 +1,1 @@
 projectPath: ./vlocity
-
-jobName: RevertChanges
-revertChange: true
-activate: false
-continueOnError: true
-manifest: 
-  - VlocityDataPackKey: VlocityCard/Arun
-  
