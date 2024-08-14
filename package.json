@@ -30,6 +30,21 @@
     "prettier": "^2.6.0",
     "prettier-plugin-apex": "^1.10.0"
   },
+    "scripts": {
+        "start": "vlocity help",
+        "packExport": "vlocity packExport",
+        "packDeploy": "vlocity packDeploy ",
+        "packUpdateSettings": "vlocity packUpdateSettings",
+        "revertChange": "vlocity revertChange",
+        "packGetDiffs": "vlocity packGetDiffs",
+        "packGetDiffsAndDeploy": "vlocity packGetDiffsAndDeploy",
+        "refreshVlocityBase": "vlocity refreshVlocityBase",
+        "runJavaScript": "vlocity runJavaScript",
+        "test": "vlocity runTestJob",
+        "unitTest": "mocha test/**/**.spec.js",
+        "build": "pkg . --out-path ./dist",
+        "nyctest": "nyc mocha test/**/**.spec.js"
+    },
   "lint-staged": {
     "**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}": [
       "prettier --write"
