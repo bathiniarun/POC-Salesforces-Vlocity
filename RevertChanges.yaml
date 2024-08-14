@@ -1,5 +1,2 @@
 projectPath: ./vlocity
-gitCheck: true
-ignoreLWCActivationOS: true
-ignoreLWCActivationCards: true
 operation: Revert
