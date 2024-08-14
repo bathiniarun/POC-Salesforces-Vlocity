@@ -1,4 +1,4 @@
-name: Salesforce Build and Deploy
+name: Revert Deployment
 
 on: 
     workflow_dispatch:
@@ -68,4 +68,4 @@ jobs:
 
       - name: Deploy Vlocity Components using Manifest
         run: |
-          vlocity revert -job flexpage.project.yaml -sfdx.username ${{ secrets.USER_NAME }}
+          vlocity -job flexpage.project.yaml -sfdx.username ${{ secrets.USER_NAME }} undeploy
