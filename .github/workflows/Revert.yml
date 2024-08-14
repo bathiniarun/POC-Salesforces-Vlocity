@@ -68,4 +68,4 @@ jobs:
 
       - name: Deploy Vlocity Components using Manifest
         run: |
-          vlocity -job flexpage.project.yaml -sfdx.username ${{ secrets.USER_NAME }} packTest
+          vlocity -job flexpage.project.yaml -sfdx.username ${{ secrets.USER_NAME }} revertChange
