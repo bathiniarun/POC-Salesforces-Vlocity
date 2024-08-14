@@ -2,3 +2,7 @@ projectPath: ./vlocity
 gitCheck: true
 ignoreLWCActivationOS: true
 ignoreLWCActivationCards: true
+jobOptions:
+  revertChange: true
+  activate: false
+  continueOnError: true
