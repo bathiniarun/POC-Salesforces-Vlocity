@@ -1,8 +1,9 @@
 projectPath: ./vlocity
-gitCheck: true
+
 jobName: RevertChanges
+revertChange: true
+activate: false
+continueOnError: true
 manifest: 
-  - VlocityDataPackKey: DataPackType/DataPackName
-queries: 
-  - VlocityDataPackType: DataPackType
-    query: Select Id, Name from %vlocity_namespace%__DataPackType__c where Name = 'DataPackName'
+  - VlocityDataPackKey: VlocityCard/Arun
+  
