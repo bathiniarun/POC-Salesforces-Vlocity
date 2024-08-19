@@ -48,18 +48,3 @@ jobs:
   
     - name: Display the secret value
       run: cat jwt.key
-
-
-
-
-            - name: Azure Key Vault Action
-  uses: gincher/azure-keyvault@v1
-  with:
-    # The name of the Azure Key Vault from which the secrets will be downloaded.
-    keyVaultName: 
-          
-
-
-
-
-
