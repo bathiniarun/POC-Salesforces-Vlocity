@@ -31,21 +31,18 @@ jobs:
       - name: Install Puppeteer
         run: npm install puppeteer
 
-      - name: Create JWT key file
-        run: echo "${{ secrets.JWT_KEY_FILE }}" > jwt.key
+      - name: Create .key file from secret
+        run: echo "${{ secrets.JWT_SECRET }}" > jwt.key
     
-      - name: Check jwt.key
-        run: cat jwt.key
 
       - name: Authenticate with Salesforce
         run: |
-          jwt_key_file="jwt.key"
           client_id="${{ secrets.CLIENT_ID }}"
           user_name="${{ secrets.USER_NAME }}"
           login_url="${{ secrets.LOGIN_URL }}"
         
           echo "Authenticating with Salesforce..."
-          sfdx force:auth:jwt:grant --clientid $client_id --jwtkeyfile $jwt_key_file --username $user_name --instanceurl $login_url 
+          sfdx force:auth:jwt:grant --clientid $client_id --jwtkeyfile jwt.key --username $user_name --instanceurl $login_url 
 
       - name: Verify Salesforce Connection
         id: verify_connection
