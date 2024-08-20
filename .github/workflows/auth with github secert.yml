@@ -31,9 +31,16 @@ jobs:
       - name: Install Puppeteer
         run: npm install puppeteer
 
+      - name: Decode and save .key file
+        run: echo "${{ secrets.JWT_KEY_FILE }}" | base64 -d > jwt.key
+
+      - name: Validate JWT key with OpenSSL
+        run: |
+          openssl rsa -in jwt.key -check
+
       - name: Authenticate with Salesforce
         run: |
-          jwt_key_file="${{ secrets.JWT_KEY_FILE }}"
+          jwt_key_file="jwt.key"
           client_id="${{ secrets.CLIENT_ID }}"
           user_name="${{ secrets.USER_NAME }}"
           login_url="${{ secrets.LOGIN_URL }}"
