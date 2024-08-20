@@ -33,6 +33,9 @@ jobs:
 
       - name: Create JWT key file
         run: echo "${{ secrets.JWT_KEY_FILE }}" > jwt.key
+    
+      - name: Check jwt.key
+        run: cat jwt.key
 
       - name: Authenticate with Salesforce
         run: |
