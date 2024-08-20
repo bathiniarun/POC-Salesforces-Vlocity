@@ -31,8 +31,8 @@ jobs:
       - name: Install Puppeteer
         run: npm install puppeteer
 
-      - name: Decode and save .key file
-        run: echo "${{ secrets.JWT_KEY_FILE }}" | jwt.key
+      - name: Create JWT key file
+        run: echo "${{ secrets.JWT_KEY_FILE }}" > jwt.key
 
       - name: Validate JWT key with OpenSSL
         run: |
