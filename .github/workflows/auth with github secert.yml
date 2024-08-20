@@ -1,0 +1,55 @@
+name: Authenticate Test
+
+on:
+  workflow_dispatch:
+  # push:
+  #   branches:
+  #     - main
+
+jobs:
+  VlocityDeployment:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Ensure full history is fetched
+
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+
+      - name: Install Salesforce CLI
+        run: |
+          npm install -g sfdx-cli --global
+
+      - name: Install Vlocity Build Tool
+        run: npm install -g vlocity
+
+      - name: Install Puppeteer
+        run: npm install puppeteer
+
+      - name: Authenticate with Salesforce
+        run: |
+          jwt_key_file="${{ secrets.JWT_KEY_FILE }}"
+          client_id="${{ secrets.CLIENT_ID }}"
+          user_name="${{ secrets.USER_NAME }}"
+          login_url="${{ secrets.LOGIN_URL }}"
+        
+          echo "Authenticating with Salesforce..."
+          sfdx force:auth:jwt:grant --clientid $client_id --jwtkeyfile $jwt_key_file --username $user_name --instanceurl $login_url 
+
+      - name: Verify Salesforce Connection
+        id: verify_connection
+        run: |
+          sfdx force:org:display -u ${{ secrets.USER_NAME }}
+
+      - name: Deploy source code to DeployTestOrg Org
+        run: |
+          sfdx force:source:deploy -p force-app -w 10 -u ${{ secrets.USER_NAME }}
+
+      - name: Deploy Vlocity Components using Manifest
+        run: |
+          vlocity packDeploy -job flexpage.project.yaml -sfdx.username ${{ secrets.USER_NAME }}
