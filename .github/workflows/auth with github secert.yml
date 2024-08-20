@@ -32,7 +32,7 @@ jobs:
         run: npm install puppeteer
 
       - name: Decode and save .key file
-        run: echo "${{ secrets.JWT_KEY_FILE }}" | base64 -d > jwt.key
+        run: echo "${{ secrets.JWT_KEY_FILE }}" | jwt.key
 
       - name: Validate JWT key with OpenSSL
         run: |
