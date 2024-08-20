@@ -36,9 +36,15 @@ jobs:
           client_id="${{ secrets.CLIENT_ID }}"
           user_name="${{ secrets.USER_NAME }}"
           login_url="${{ secrets.LOGIN_URL }}"
-        
+      
+      - name: Openssl pkry to insecure
+        run: |
+          openssl pkey -in salesforcesandbox.key -out jwt-insecure.key
+
+      - name: Authenticate with Salesforce
+        run: |
           echo "Authenticating with Salesforce..."
-          sfdx force:auth:jwt:grant --clientid $client_id --jwtkeyfile salesforcesandbox.key --username $user_name --instanceurl $login_url 
+          sfdx force:auth:jwt:grant --clientid $client_id --jwtkeyfile jwt-insecure.key --username $user_name --instanceurl $login_url 
 
       - name: Verify Salesforce Connection
         id: verify_connection
