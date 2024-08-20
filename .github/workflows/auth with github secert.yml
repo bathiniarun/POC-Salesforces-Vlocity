@@ -31,10 +31,6 @@ jobs:
       - name: Install Puppeteer
         run: npm install puppeteer
 
-      - name: Create .key file from secret
-        run: echo "${{ secrets.JWT_SECRET }}" > jwt.key
-    
-
       - name: Authenticate with Salesforce
         run: |
           client_id="${{ secrets.CLIENT_ID }}"
@@ -42,17 +38,9 @@ jobs:
           login_url="${{ secrets.LOGIN_URL }}"
         
           echo "Authenticating with Salesforce..."
-          sfdx force:auth:jwt:grant --clientid $client_id --jwtkeyfile jwt.key --username $user_name --instanceurl $login_url 
+          sfdx force:auth:jwt:grant --clientid $client_id --jwtkeyfile salesforcesandbox.key --username $user_name --instanceurl $login_url 
 
       - name: Verify Salesforce Connection
         id: verify_connection
         run: |
           sfdx force:org:display -u ${{ secrets.USER_NAME }}
-
-      - name: Deploy source code to DeployTestOrg Org
-        run: |
-          sfdx force:source:deploy -p force-app -w 10 -u ${{ secrets.USER_NAME }}
-
-      - name: Deploy Vlocity Components using Manifest
-        run: |
-          vlocity packDeploy -job flexpage.project.yaml -sfdx.username ${{ secrets.USER_NAME }}
