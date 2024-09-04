@@ -21,20 +21,20 @@ jobs:
         with:
           node-version: '18.x'
 
-      - name: Azure CLI Action
-        uses: Azure/cli@v2.0.0
-        with:
-          inlineScript: |
-             az --version
+     # - name: Azure CLI Action
+      #  uses: Azure/cli@v2.0.0
+      #  with:
+        #  inlineScript: |
+         #    az --version
   
-      - name: Log in to Azure
-        run: |
-          az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
-          az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+     # - name: Log in to Azure
+     #   run: |
+      #    az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
+       #   az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
   
-      - name: Retrieve JWT Key from Azure Key Vault
-        run: |
-          az keyvault secret download --vault-name ${{ secrets.KEY_VAULT_NAME }} --name cicd1 --file jwt.key
+      #- name: Retrieve JWT Key from Azure Key Vault
+      #  run: |
+       #   az keyvault secret download --vault-name ${{ secrets.KEY_VAULT_NAME }} --name cicd1 --file jwt.key
 
       # - name: Validate JWT key with OpenSSL
       #   run: |
@@ -50,25 +50,26 @@ jobs:
       - name: Install Puppeteer
         run: npm install puppeteer
 
+     # - name: Authenticate with Salesforce
+      #  run: |
+       #   jwt_key_file="jwt.key"
+       #   client_id="${{ secrets.CLIENT_ID }}"
+        #  user_name="${{ secrets.USER_NAME }}"
+        #  login_url="${{ secrets.LOGIN_URL }}"
+        
       - name: Authenticate with Salesforce
         run: |
-          jwt_key_file="jwt.key"
-          client_id="${{ secrets.CLIENT_ID }}"
-          user_name="${{ secrets.USER_NAME }}"
-          login_url="${{ secrets.LOGIN_URL }}"
-        
-          echo "Authenticating with Salesforce..."
-          sfdx force:auth:jwt:grant --clientid $client_id --jwtkeyfile $jwt_key_file --username $user_name --instanceurl $login_url 
+          sfdx force:auth:jwt:grant --clientid 3MVG9NYvTkhtdEI5Z9dZmBB.toZ_f9ZTkCtyPmQsts6QEJINuMe.ywRNgQcUztn1n6Aw8r8OZ0uJHhAIos7nX --jwtkeyfile SSL/server.key --username bxkumar1@sentara.com.cicd2 --instanceurl https://sentarahealth--cicd2.sandbox.my.salesforce.com
 
       - name: Verify Salesforce Connection
         id: verify_connection
         run: |
-          sfdx force:org:display -u ${{ secrets.USER_NAME }}
+          sfdx force:org:display -u bxkumar1@sentara.com.cicd2
 
       - name: Deploy source code to DeployTestOrg Org
         run: |
-          sfdx force:source:deploy -p force-app -w 10 -u ${{ secrets.USER_NAME }}
+          sfdx force:source:deploy -p force-app -w 10 -u bxkumar1@sentara.com.cicd2
 
       - name: Deploy Vlocity Components using Manifest
         run: |
-          vlocity packDeploy -job flexpage.project.yaml -sfdx.username ${{ secrets.USER_NAME }} -validate
+          vlocity packDeploy -job flexpage.project.yaml -sfdx.username bxkumar1@sentara.com.cicd2
